@@ -1,0 +1,14 @@
+.board {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+@media (min-width: 2560px) {
+  .board {
+    gap: 12px;
+  }
+}

@@ -1,0 +1,66 @@
+.heatmap {
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  min-height: 44px;
+  text-align: left;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.row:hover {
+  background: var(--bg-hover);
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  min-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar {
+  flex: 1;
+  height: 16px;
+  display: flex;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+.segment {
+  height: 100%;
+  min-width: 2px;
+  transition: width 0.3s ease;
+}
+
+.ratio {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  min-width: 50px;
+  text-align: right;
+}
+
+.pct {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 36px;
+  text-align: right;
+}

@@ -4,8 +4,8 @@
 
 ## Current Work
 
-**Seq:** (pending) | **Name:** (pending) | **Status:** Not Started
-**Task List:** (none)
+**Seq:** 001 | **Name:** kanban-dashboard | **Status:** Complete
+**Task List:** project-docs/001-kanban-dashboard-tasks.md
 
 ---
 
@@ -169,6 +169,7 @@ Requirements include the sequence number to link them to specific work items.
 
 | Seq | Short Name | Component | Requirements | Design | Task List | Status |
 |-----|------------|-----------|--------------|--------|-----------|--------|
+| 001 | kanban-dashboard | — | konban board.md | 001-design-kanban-dashboard.md | 001-kanban-dashboard-tasks.md | Complete |
 
 ---
 

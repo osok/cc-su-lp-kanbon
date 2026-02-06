@@ -1,0 +1,63 @@
+/**
+ * Theme system using CSS Custom Properties.
+ * Requirements: FR-THM-001, FR-THM-004, ADR-005
+ * Source: design-docs/01-style-guide.md
+ */
+
+/* Light Theme (default) */
+:root[data-theme="light"] {
+  /* Status colors (Appendix C) */
+  --status-complete: #22C55E;
+  --status-in-progress: #F59E0B;
+  --status-blocked: #EF4444;
+  --status-pending: #9CA3AF;
+  --status-deferred: #64748B;
+
+  /* Sequence accent colors (Appendix D) */
+  --seq-001: #6366F1;
+  --seq-002: #14B8A6;
+  --seq-003: #A855F7;
+  --seq-004: #F97316;
+  --seq-005: #06B6D4;
+  --seq-006: #F43F5E;
+  --seq-007: #64748B;
+
+  /* Surface colors */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-hover: #F1F5F9;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --border-color: #E2E8F0;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme */
+:root[data-theme="dark"] {
+  /* Status colors (Appendix C) */
+  --status-complete: #4ADE80;
+  --status-in-progress: #FBBF24;
+  --status-blocked: #F87171;
+  --status-pending: #6B7280;
+  --status-deferred: #94A3B8;
+
+  /* Sequence accent colors (Appendix D) */
+  --seq-001: #818CF8;
+  --seq-002: #2DD4BF;
+  --seq-003: #C084FC;
+  --seq-004: #FB923C;
+  --seq-005: #22D3EE;
+  --seq-006: #FB7185;
+  --seq-007: #94A3B8;
+
+  /* Surface colors */
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-card: #334155;
+  --bg-hover: #475569;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --border-color: #334155;
+  --shadow: rgba(0, 0, 0, 0.3);
+}

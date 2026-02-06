@@ -1,0 +1,18 @@
+{
+  "name": "@kanban/md-parser",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@kanban/types": "*"
+  },
+  "devDependencies": {
+    "vitest": "^1.2.0"
+  }
+}

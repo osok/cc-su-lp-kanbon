@@ -1,0 +1,35 @@
+{
+  "name": "kanban-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI Tester Kanban Dashboard - Read-only Kanban board for markdown task files",
+  "workspaces": [
+    "shared/types",
+    "components/md-parser",
+    "components/backend-api",
+    "components/kanban-ui"
+  ],
+  "scripts": {
+    "build:types": "npm run build -w @kanban/types",
+    "build:parser": "npm run build -w @kanban/md-parser",
+    "build:backend": "npm run build -w @kanban/backend-api",
+    "build:ui": "npm run build -w @kanban/kanban-ui",
+    "build": "npm run build:types && npm run build:parser && npm run build:backend && npm run build:ui",
+    "dev:backend": "npm run dev -w @kanban/backend-api",
+    "dev:ui": "npm run dev -w @kanban/kanban-ui",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:ui\"",
+    "start": "npm run build && node components/backend-api/dist/index.js",
+    "test": "npm test --workspaces --if-present",
+    "test:parser": "npm test -w @kanban/md-parser",
+    "test:backend": "npm test -w @kanban/backend-api",
+    "test:ui": "npm test -w @kanban/kanban-ui",
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
