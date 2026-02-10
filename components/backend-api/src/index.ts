@@ -7,7 +7,7 @@ import { ConfigStore } from './services/config-store.js';
 import { FileDiscoveryService } from './services/file-discovery.js';
 import { PollManager } from './services/poll-manager.js';
 
-const PORT = parseInt(process.env.PORT || '3001', 10);
+const PORT = parseInt(process.env.PORT || '7600', 10);
 
 async function main(): Promise<void> {
   const configStore = new ConfigStore();

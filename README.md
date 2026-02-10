@@ -32,8 +32,8 @@ npm run dev
 ```
 
 The dashboard will be available at:
-- **Production:** http://localhost:3001
-- **Development:** http://localhost:3000 (frontend) + http://localhost:3001 (API)
+- **Production:** http://localhost:7600
+- **Development:** http://localhost:3000 (frontend) + http://localhost:7600 (API)
 
 On first launch, select the directory containing your markdown task files.
 

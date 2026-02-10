@@ -34,7 +34,7 @@
 | **Language** | TypeScript |
 | **Depends On** | md-parser |
 | **Deployment** | Local (npm start) |
-| **Port** | 3001 |
+| **Port** | 7600 |
 | **Status** | pending |
 
 ---
