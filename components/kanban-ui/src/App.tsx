@@ -4,14 +4,16 @@
  * Requirements: IR-UI-003, FR-KBN-001, FR-THM-001
  */
 import React, { useState, useCallback, useEffect } from 'react';
-import type { AppConfig } from '@kanban/types';
+import type { AppConfig, Task } from '@kanban/types';
 import { Header } from './components/Header/Header.js';
 import { ProgressHeatmap } from './components/Heatmap/ProgressHeatmap.js';
+import { SequenceFilterControls } from './components/Filter/SequenceFilterControls.js';
 import { FilterBar } from './components/Filter/FilterBar.js';
 import { Board } from './components/Board/Board.js';
 import { SwimlaneBoard } from './components/Swimlane/SwimlaneBoard.js';
 import { DependencyOverlay } from './components/DependencyOverlay/DependencyOverlay.js';
 import { DirectoryPickerModal } from './components/DirectoryPicker/DirectoryPickerModal.js';
+import { TaskDetailModal } from './components/TaskDetail/TaskDetailModal.js';
 import { EmptyState } from './components/ErrorBoundary/EmptyState.js';
 import { ErrorState } from './components/ErrorBoundary/ErrorState.js';
 import { usePolling } from './hooks/usePolling.js';
@@ -22,11 +24,19 @@ import { fetchConfig } from './api/client.js';
 export function App(): React.ReactElement {
   const { theme, toggleTheme } = useTheme();
   const { tasks, sequences, changes, lastUpdated, isLoading, error, refresh } = usePolling(30000);
-  const { selectedSequence, setSelectedSequence, filteredTasks } = useFilter(tasks);
+  const {
+    selectedSequence,
+    setSelectedSequence,
+    filteredTasks,
+    filterConfig,
+    setFilterConfig,
+    filteredSequences,
+  } = useFilter(tasks, sequences);
 
   const [viewMode, setViewMode] = useState<'flat' | 'swimlane'>('flat');
   const [showDependencies, setShowDependencies] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [detailTask, setDetailTask] = useState<Task | null>(null);
   const [showDirectoryPicker, setShowDirectoryPicker] = useState(false);
   const [config, setConfig] = useState<AppConfig | null>(null);
 
@@ -55,6 +65,14 @@ export function App(): React.ReactElement {
 
   const handleSelectTask = useCallback((taskId: string) => {
     setSelectedTaskId(prev => prev === taskId ? null : taskId);
+  }, []);
+
+  const handleOpenDetail = useCallback((task: Task) => {
+    setDetailTask(task);
+  }, []);
+
+  const handleCloseDetail = useCallback(() => {
+    setDetailTask(null);
   }, []);
 
   const handleOpenDirectoryPicker = useCallback(() => {
@@ -143,13 +161,20 @@ export function App(): React.ReactElement {
         onOpenDirectoryPicker={handleOpenDirectoryPicker}
       />
 
+      <SequenceFilterControls
+        filterConfig={filterConfig}
+        onFilterChange={setFilterConfig}
+        visibleCount={filteredSequences.length}
+        totalCount={sequences.length}
+      />
+
       <ProgressHeatmap
-        sequences={sequences}
+        sequences={filteredSequences}
         onSelectSequence={handleSelectSequenceFromHeatmap}
       />
 
       <FilterBar
-        sequences={sequences}
+        sequences={filteredSequences}
         selectedSequence={selectedSequence}
         totalTasks={tasks.length}
         onSelectSequence={setSelectedSequence}
@@ -161,6 +186,7 @@ export function App(): React.ReactElement {
           changes={changes}
           selectedTaskId={selectedTaskId}
           onSelectTask={handleSelectTask}
+          onOpenDetail={handleOpenDetail}
         />
       ) : (
         <SwimlaneBoard
@@ -168,6 +194,7 @@ export function App(): React.ReactElement {
           changes={changes}
           selectedTaskId={selectedTaskId}
           onSelectTask={handleSelectTask}
+          onOpenDetail={handleOpenDetail}
         />
       )}
 
@@ -176,6 +203,8 @@ export function App(): React.ReactElement {
         selectedTaskId={selectedTaskId}
         visible={showDependencies}
       />
+
+      <TaskDetailModal task={detailTask} onClose={handleCloseDetail} />
 
       <DirectoryPickerModal
         isOpen={showDirectoryPicker}

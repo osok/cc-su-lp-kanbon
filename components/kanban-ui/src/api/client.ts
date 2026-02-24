@@ -54,3 +54,20 @@ export async function setDirectory(directory: string): Promise<ApiResponse<AppCo
     body: JSON.stringify({ directory }),
   });
 }
+
+/** Browse directory listing */
+export interface BrowseEntry {
+  name: string;
+  path: string;
+}
+
+export interface BrowseResult {
+  current: string;
+  parent: string | null;
+  directories: BrowseEntry[];
+}
+
+export async function browseDirectory(dirPath?: string): Promise<{ data: BrowseResult }> {
+  const query = dirPath ? `?path=${encodeURIComponent(dirPath)}` : '';
+  return fetchJson<{ data: BrowseResult }>(`/config/browse${query}`);
+}

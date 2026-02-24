@@ -24,17 +24,17 @@ const mockSequences: Sequence[] = [
   },
 ];
 
+const defaultProps = {
+  sequences: mockSequences,
+  selectedSequence: null as string | null,
+  totalTasks: 107,
+  onSelectSequence: vi.fn(),
+};
+
 describe('FilterBar', () => {
   // TP-067: FilterBar renders sequence tabs
   it('should render tabs for all sequences', () => {
-    render(
-      <FilterBar
-        sequences={mockSequences}
-        selectedSequence={null}
-        totalTasks={107}
-        onSelectSequence={vi.fn()}
-      />
-    );
+    render(<FilterBar {...defaultProps} />);
 
     expect(screen.getByText(/001 - Core/)).toBeInTheDocument();
     expect(screen.getByText(/003 - ProjMgr/)).toBeInTheDocument();
@@ -42,28 +42,14 @@ describe('FilterBar', () => {
 
   // TP-068: FilterBar "All" tab
   it('should render All tab with total count', () => {
-    render(
-      <FilterBar
-        sequences={mockSequences}
-        selectedSequence={null}
-        totalTasks={107}
-        onSelectSequence={vi.fn()}
-      />
-    );
+    render(<FilterBar {...defaultProps} />);
 
     expect(screen.getByText('All (107)')).toBeInTheDocument();
   });
 
   it('should call onSelectSequence when tab is clicked', () => {
     const onSelect = vi.fn();
-    render(
-      <FilterBar
-        sequences={mockSequences}
-        selectedSequence={null}
-        totalTasks={107}
-        onSelectSequence={onSelect}
-      />
-    );
+    render(<FilterBar {...defaultProps} onSelectSequence={onSelect} />);
 
     fireEvent.click(screen.getByText(/001 - Core/));
     expect(onSelect).toHaveBeenCalledWith('001');
@@ -71,14 +57,7 @@ describe('FilterBar', () => {
 
   it('should call onSelectSequence with null when All is clicked', () => {
     const onSelect = vi.fn();
-    render(
-      <FilterBar
-        sequences={mockSequences}
-        selectedSequence="001"
-        totalTasks={107}
-        onSelectSequence={onSelect}
-      />
-    );
+    render(<FilterBar {...defaultProps} selectedSequence="001" onSelectSequence={onSelect} />);
 
     fireEvent.click(screen.getByText('All (107)'));
     expect(onSelect).toHaveBeenCalledWith(null);

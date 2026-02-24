@@ -1,6 +1,6 @@
 /**
  * FilterBar component.
- * Horizontal tab bar for sequence filtering.
+ * Horizontal tab bar for sequence selection.
  * Requirements: FR-FLT-001 through FR-FLT-005
  */
 import React from 'react';
@@ -14,7 +14,12 @@ interface FilterBarProps {
   onSelectSequence: (sequenceId: string | null) => void;
 }
 
-export function FilterBar({ sequences, selectedSequence, totalTasks, onSelectSequence }: FilterBarProps): React.ReactElement {
+export function FilterBar({
+  sequences,
+  selectedSequence,
+  totalTasks,
+  onSelectSequence,
+}: FilterBarProps): React.ReactElement {
   return (
     <div className={styles.filterBar} role="tablist" aria-label="Sequence filter">
       <button

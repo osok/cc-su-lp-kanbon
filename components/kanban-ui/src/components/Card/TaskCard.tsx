@@ -13,22 +13,25 @@ interface TaskCardProps {
   changes: TaskChange[];
   isSelected: boolean;
   onSelect: (taskId: string) => void;
+  onOpenDetail?: (task: Task) => void;
 }
 
-export function TaskCard({ task, changes, isSelected, onSelect }: TaskCardProps): React.ReactElement {
+export function TaskCard({ task, changes, isSelected, onSelect, onOpenDetail }: TaskCardProps): React.ReactElement {
   const sequenceColor = getSequenceColor(task.sequenceId);
   const isChanged = changes.some(c => c.taskId === task.taskId);
 
   const handleClick = useCallback(() => {
     onSelect(task.taskId);
-  }, [onSelect, task.taskId]);
+    onOpenDetail?.(task);
+  }, [onSelect, onOpenDetail, task]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       onSelect(task.taskId);
+      onOpenDetail?.(task);
     }
-  }, [onSelect, task.taskId]);
+  }, [onSelect, onOpenDetail, task]);
 
   return (
     <div

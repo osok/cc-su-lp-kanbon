@@ -3,11 +3,12 @@
  * Isolated, zero-dependency markdown task file parser.
  * Requirements: NR-MNT-001
  */
-import type { ParseResult, Task, StatusType } from '@kanban/types';
+import type { ParseResult, Task, TaskDetail, StatusType } from '@kanban/types';
 import { parseTable } from './table-parser.js';
 import { normalizeStatus } from './status-normalizer.js';
 import { parseDependencies } from './dependency-parser.js';
 import { extractSequenceId, extractSequenceName } from './sequence-extractor.js';
+import { parseTaskDetails } from './detail-parser.js';
 
 /**
  * Parse a markdown task file into structured data.
@@ -33,6 +34,18 @@ export function parseTaskFile(content: string, filename: string): ParseResult {
     sequenceName,
     sourceFile: filename,
   }));
+
+  // Merge task detail blocks into tasks
+  const detailMap = parseTaskDetails(content);
+  if (detailMap.size > 0) {
+    for (const task of tasks) {
+      const detail = detailMap.get(task.taskId) ??
+        findDetailByNumericSuffix(task.taskId, detailMap);
+      if (detail) {
+        task.details = detail;
+      }
+    }
+  }
 
   // Compute sequence stats
   const statusBreakdown: Record<StatusType, number> = {
@@ -62,7 +75,28 @@ export function parseTaskFile(content: string, filename: string): ParseResult {
   };
 }
 
+/**
+ * Match a full task ID (e.g., "TASK-001-015") to a detail map key
+ * which may be a shorter form (e.g., "T015") by comparing numeric suffixes.
+ */
+function findDetailByNumericSuffix(
+  taskId: string,
+  detailMap: Map<string, TaskDetail>,
+): TaskDetail | undefined {
+  const taskNum = taskId.match(/(\d+)$/)?.[1];
+  if (!taskNum) return undefined;
+
+  for (const [key, detail] of detailMap) {
+    const keyNum = key.match(/(\d+)$/)?.[1];
+    if (keyNum && keyNum === taskNum) {
+      return detail;
+    }
+  }
+  return undefined;
+}
+
 // Re-export utility functions for testing
 export { normalizeStatus } from './status-normalizer.js';
 export { parseDependencies } from './dependency-parser.js';
 export { extractSequenceId, extractSequenceName } from './sequence-extractor.js';
+export { parseTaskDetails } from './detail-parser.js';

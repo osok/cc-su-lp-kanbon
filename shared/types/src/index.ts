@@ -6,6 +6,17 @@
 /** Canonical status values */
 export type StatusType = 'complete' | 'in-progress' | 'pending' | 'blocked' | 'deferred';
 
+/** Extended detail data for a single task (parsed from Task Details section) */
+export interface TaskDetail {
+  requirements: string[];
+  designRef: string;
+  component: string;
+  files: string[];
+  acceptance: string;
+  description: string;
+  resolution: string;
+}
+
 /** Single task record (Section 11.1.1) */
 export interface Task {
   taskId: string;
@@ -17,6 +28,7 @@ export interface Task {
   sequenceId: string;
   sequenceName: string;
   sourceFile: string;
+  details?: TaskDetail;
 }
 
 /** Sequence metadata (Section 11.1.2) */

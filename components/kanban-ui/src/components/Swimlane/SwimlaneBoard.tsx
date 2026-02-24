@@ -15,6 +15,7 @@ interface SwimlaneBoardProps {
   changes: TaskChange[];
   selectedTaskId: string | null;
   onSelectTask: (taskId: string) => void;
+  onOpenDetail?: (task: Task) => void;
 }
 
 interface AgentGroup {
@@ -23,7 +24,7 @@ interface AgentGroup {
   tasksByStatus: Record<StatusType, Task[]>;
 }
 
-export function SwimlaneBoard({ tasks, changes, selectedTaskId, onSelectTask }: SwimlaneBoardProps): React.ReactElement {
+export function SwimlaneBoard({ tasks, changes, selectedTaskId, onSelectTask, onOpenDetail }: SwimlaneBoardProps): React.ReactElement {
   const agentGroups = useMemo((): AgentGroup[] => {
     const groupMap = new Map<string, Task[]>();
 
@@ -75,6 +76,7 @@ export function SwimlaneBoard({ tasks, changes, selectedTaskId, onSelectTask }: 
                 changes={changes}
                 selectedTaskId={selectedTaskId}
                 onSelectTask={onSelectTask}
+                onOpenDetail={onOpenDetail}
               />
             ))}
           </div>

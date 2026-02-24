@@ -15,9 +15,10 @@ interface BoardProps {
   changes: TaskChange[];
   selectedTaskId: string | null;
   onSelectTask: (taskId: string) => void;
+  onOpenDetail?: (task: Task) => void;
 }
 
-export function Board({ tasks, changes, selectedTaskId, onSelectTask }: BoardProps): React.ReactElement {
+export function Board({ tasks, changes, selectedTaskId, onSelectTask, onOpenDetail }: BoardProps): React.ReactElement {
   const tasksByStatus = useMemo(() => {
     const grouped: Record<StatusType, Task[]> = {
       'pending': [],
@@ -46,6 +47,7 @@ export function Board({ tasks, changes, selectedTaskId, onSelectTask }: BoardPro
           changes={changes}
           selectedTaskId={selectedTaskId}
           onSelectTask={onSelectTask}
+          onOpenDetail={onOpenDetail}
         />
       ))}
     </div>

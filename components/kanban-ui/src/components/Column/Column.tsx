@@ -23,9 +23,10 @@ interface ColumnProps {
   changes: TaskChange[];
   selectedTaskId: string | null;
   onSelectTask: (taskId: string) => void;
+  onOpenDetail?: (task: Task) => void;
 }
 
-export function Column({ status, tasks, changes, selectedTaskId, onSelectTask }: ColumnProps): React.ReactElement {
+export function Column({ status, tasks, changes, selectedTaskId, onSelectTask, onOpenDetail }: ColumnProps): React.ReactElement {
   const statusColor = getStatusColor(status);
 
   return (
@@ -44,6 +45,7 @@ export function Column({ status, tasks, changes, selectedTaskId, onSelectTask }:
             changes={changes}
             isSelected={selectedTaskId === task.taskId}
             onSelect={onSelectTask}
+            onOpenDetail={onOpenDetail}
           />
         ))}
       </div>

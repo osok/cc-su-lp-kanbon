@@ -70,4 +70,107 @@ Seq: 001
     expect(result.tasks).toHaveLength(0);
     expect(result.sequence.totalTasks).toBe(0);
   });
+
+  it('should parse task details and merge into tasks', () => {
+    const content = `# Core Tasks
+
+| ID | Task | Status | Blocked-By | Agent | Notes |
+|----|------|--------|------------|-------|-------|
+| T001 | Setup project | complete | - | Developer | high |
+| T002 | Build API | in-progress | T001 | Developer | |
+
+---
+
+## Task Details
+
+### T001 -- Setup project
+
+| Field | Value |
+|-------|-------|
+| **Status** | complete |
+| **Agent** | Developer |
+| **Requirements** | REQ-001-FN-001, REQ-001-FN-002 |
+| **Component** | backend |
+| **Files** | src/server.ts |
+| **Acceptance** | Project builds without errors |
+
+**Description:**
+Initialize the project structure with TypeScript and Express.
+
+**Resolution:**
+Project initialized successfully with all dependencies.
+
+---
+
+### T002 -- Build API
+
+| Field | Value |
+|-------|-------|
+| **Status** | in-progress |
+| **Requirements** | REQ-001-FN-003 |
+| **Design Ref** | 001-backend-design.md |
+
+**Description:**
+Build the REST API endpoints.
+
+---`;
+    const result = parseTaskFile(content, '001-core-tasks.md');
+
+    expect(result.tasks).toHaveLength(2);
+
+    // First task should have merged details
+    const t1 = result.tasks[0];
+    expect(t1.details).toBeDefined();
+    expect(t1.details!.requirements).toEqual(['REQ-001-FN-001', 'REQ-001-FN-002']);
+    expect(t1.details!.component).toBe('backend');
+    expect(t1.details!.files).toEqual(['src/server.ts']);
+    expect(t1.details!.acceptance).toBe('Project builds without errors');
+    expect(t1.details!.description).toContain('Initialize the project structure');
+    expect(t1.details!.resolution).toContain('Project initialized successfully');
+
+    // Second task should have merged details
+    const t2 = result.tasks[1];
+    expect(t2.details).toBeDefined();
+    expect(t2.details!.requirements).toEqual(['REQ-001-FN-003']);
+    expect(t2.details!.designRef).toBe('001-backend-design.md');
+    expect(t2.details!.description).toContain('Build the REST API endpoints');
+    expect(t2.details!.resolution).toBe('');
+  });
+
+  it('should merge details using numeric suffix matching for long-form IDs', () => {
+    const content = `# Tasks
+
+| ID | Task | Status | Blocked-By | Agent | Notes |
+|----|------|--------|------------|-------|-------|
+| TASK-041-005 | Recording workflow | complete | - | Developer | |
+
+---
+
+### T005 -- Recording workflow
+
+| Field | Value |
+|-------|-------|
+| **Requirements** | REQ-041-FN-014 |
+
+**Description:**
+Implement recording workflow handlers.
+
+---`;
+    const result = parseTaskFile(content, '041-tasks.md');
+    expect(result.tasks).toHaveLength(1);
+    expect(result.tasks[0].details).toBeDefined();
+    expect(result.tasks[0].details!.requirements).toEqual(['REQ-041-FN-014']);
+  });
+
+  it('should handle files without task details section gracefully', () => {
+    const content = `# Simple Tasks
+
+| ID | Task | Status | Blocked-By | Agent | Notes |
+|----|------|--------|------------|-------|-------|
+| T001 | Do thing | pending | - | Developer | |
+`;
+    const result = parseTaskFile(content, '001-tasks.md');
+    expect(result.tasks).toHaveLength(1);
+    expect(result.tasks[0].details).toBeUndefined();
+  });
 });
