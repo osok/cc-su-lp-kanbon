@@ -11,6 +11,10 @@ const defaultConfig: SequenceFilterConfig = { mode: 'all', lastN: 5 };
 const defaultProps = {
   filterConfig: defaultConfig,
   onFilterChange: vi.fn(),
+  nameFilter: '',
+  onNameFilterChange: vi.fn(),
+  sortDirection: 'desc' as const,
+  onToggleSortDirection: vi.fn(),
   visibleCount: 10,
   totalCount: 10,
 };
@@ -56,5 +60,50 @@ describe('SequenceFilterControls', () => {
   it('should display singular list', () => {
     render(<SequenceFilterControls {...defaultProps} visibleCount={1} totalCount={1} />);
     expect(screen.getByText('1 list')).toBeInTheDocument();
+  });
+
+  it('should render name filter input', () => {
+    render(<SequenceFilterControls {...defaultProps} />);
+    expect(screen.getByLabelText('Filter by name')).toBeInTheDocument();
+  });
+
+  it('should call onNameFilterChange when typing in name filter', () => {
+    const onNameFilterChange = vi.fn();
+    render(<SequenceFilterControls {...defaultProps} onNameFilterChange={onNameFilterChange} />);
+
+    fireEvent.change(screen.getByLabelText('Filter by name'), { target: { value: 'EVA' } });
+    expect(onNameFilterChange).toHaveBeenCalledWith('EVA');
+  });
+
+  it('should clear name filter via clear button', () => {
+    const onNameFilterChange = vi.fn();
+    render(
+      <SequenceFilterControls {...defaultProps} nameFilter="EVA" onNameFilterChange={onNameFilterChange} />
+    );
+
+    fireEvent.click(screen.getByLabelText('Clear name filter'));
+    expect(onNameFilterChange).toHaveBeenCalledWith('');
+  });
+
+  it('should not show clear button when name filter is empty', () => {
+    render(<SequenceFilterControls {...defaultProps} nameFilter="" />);
+    expect(screen.queryByLabelText('Clear name filter')).toBeNull();
+  });
+
+  it('should show sort direction and call toggle on click', () => {
+    const onToggleSortDirection = vi.fn();
+    render(
+      <SequenceFilterControls {...defaultProps} onToggleSortDirection={onToggleSortDirection} />
+    );
+
+    const button = screen.getByLabelText('Toggle sort direction');
+    expect(button).toHaveTextContent('Desc');
+    fireEvent.click(button);
+    expect(onToggleSortDirection).toHaveBeenCalled();
+  });
+
+  it('should show ascending label when sortDirection is asc', () => {
+    render(<SequenceFilterControls {...defaultProps} sortDirection="asc" />);
+    expect(screen.getByLabelText('Toggle sort direction')).toHaveTextContent('Asc');
   });
 });

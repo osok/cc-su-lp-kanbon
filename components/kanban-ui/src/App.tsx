@@ -31,6 +31,11 @@ export function App(): React.ReactElement {
     filterConfig,
     setFilterConfig,
     filteredSequences,
+    visibleTaskCount,
+    nameFilter,
+    setNameFilter,
+    sortDirection,
+    toggleSortDirection,
   } = useFilter(tasks, sequences);
 
   const [viewMode, setViewMode] = useState<'flat' | 'swimlane'>('flat');
@@ -85,8 +90,8 @@ export function App(): React.ReactElement {
     setTimeout(refresh, 1000);
   }, [refresh]);
 
-  const handleSelectSequenceFromHeatmap = useCallback((sequenceId: string) => {
-    setSelectedSequence(sequenceId);
+  const handleSelectSequenceFromHeatmap = useCallback((sourceFile: string) => {
+    setSelectedSequence(sourceFile);
   }, [setSelectedSequence]);
 
   // Loading state
@@ -164,6 +169,10 @@ export function App(): React.ReactElement {
       <SequenceFilterControls
         filterConfig={filterConfig}
         onFilterChange={setFilterConfig}
+        nameFilter={nameFilter}
+        onNameFilterChange={setNameFilter}
+        sortDirection={sortDirection}
+        onToggleSortDirection={toggleSortDirection}
         visibleCount={filteredSequences.length}
         totalCount={sequences.length}
       />
@@ -176,7 +185,7 @@ export function App(): React.ReactElement {
       <FilterBar
         sequences={filteredSequences}
         selectedSequence={selectedSequence}
-        totalTasks={tasks.length}
+        totalTasks={visibleTaskCount}
         onSelectSequence={setSelectedSequence}
       />
 

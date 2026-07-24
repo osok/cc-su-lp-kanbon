@@ -9,7 +9,8 @@ import styles from './ProgressHeatmap.module.css';
 
 interface ProgressHeatmapProps {
   sequences: Sequence[];
-  onSelectSequence: (sequenceId: string) => void;
+  /** Receives the sequence's sourceFile — the unique sequence key */
+  onSelectSequence: (sourceFile: string) => void;
 }
 
 const STATUS_ORDER: StatusType[] = ['complete', 'in-progress', 'blocked', 'pending', 'deferred'];
@@ -33,9 +34,9 @@ export function ProgressHeatmap({ sequences, onSelectSequence }: ProgressHeatmap
 
         return (
           <button
-            key={seq.sequenceId}
+            key={seq.sourceFile}
             className={styles.row}
-            onClick={() => onSelectSequence(seq.sequenceId)}
+            onClick={() => onSelectSequence(seq.sourceFile)}
             title={`${seq.sequenceId} - ${seq.sequenceName}: ${seq.completedTasks}/${seq.totalTasks} (${pct}%)`}
           >
             <span className={styles.label}>

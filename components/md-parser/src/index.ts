@@ -35,6 +35,15 @@ export function parseTaskFile(content: string, filename: string): ParseResult {
     sourceFile: filename,
   }));
 
+  // Duplicate task IDs break change detection and dependency references
+  const seenIds = new Set<string>();
+  for (const task of tasks) {
+    if (seenIds.has(task.taskId)) {
+      warnings.push(`Duplicate task ID "${task.taskId}"`);
+    }
+    seenIds.add(task.taskId);
+  }
+
   // Merge task detail blocks into tasks
   const detailMap = parseTaskDetails(content);
   if (detailMap.size > 0) {

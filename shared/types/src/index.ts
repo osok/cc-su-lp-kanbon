@@ -85,9 +85,11 @@ export interface SystemStatus {
   isPolling: boolean;
 }
 
-/** Change detection for UI highlighting */
+/** Change detection for UI highlighting.
+ * Identified by sourceFile + taskId: taskIds repeat across files. */
 export interface TaskChange {
   taskId: string;
+  sourceFile: string;
   previousStatus: StatusType;
   newStatus: StatusType;
   changedAt: string;

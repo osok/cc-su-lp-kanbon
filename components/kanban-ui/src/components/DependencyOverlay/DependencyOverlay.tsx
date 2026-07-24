@@ -6,10 +6,12 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import type { Task } from '@kanban/types';
 import { getSequenceColor } from '../../utils/colors.js';
+import { taskKey } from '../../utils/task-key.js';
 import styles from './DependencyOverlay.module.css';
 
 interface DependencyOverlayProps {
   tasks: Task[];
+  /** Unique task key (sourceFile:taskId) of the selected task */
   selectedTaskId: string | null;
   visible: boolean;
 }
@@ -23,6 +25,11 @@ interface Line {
   dashed: boolean;
 }
 
+/** Task keys embed filenames, which may contain selector-breaking characters */
+function findCard(key: string): Element | null {
+  return document.querySelector(`[data-task-id="${CSS.escape(key)}"]`);
+}
+
 export function DependencyOverlay({ tasks, selectedTaskId, visible }: DependencyOverlayProps): React.ReactElement | null {
   const svgRef = useRef<SVGSVGElement>(null);
   const [lines, setLines] = useState<Line[]>([]);
@@ -33,25 +40,26 @@ export function DependencyOverlay({ tasks, selectedTaskId, visible }: Dependency
       return;
     }
 
-    const selectedTask = tasks.find(t => t.taskId === selectedTaskId);
+    const selectedTask = tasks.find(t => taskKey(t) === selectedTaskId);
     if (!selectedTask) {
       setLines([]);
       return;
     }
 
     const newLines: Line[] = [];
-    const selectedEl = document.querySelector(`[data-task-id="${selectedTaskId}"]`);
+    const selectedEl = findCard(selectedTaskId);
     if (!selectedEl) {
       setLines([]);
       return;
     }
 
     const selectedRect = selectedEl.getBoundingClientRect();
-    const color = getSequenceColor(selectedTask.sequenceId);
+    const color = getSequenceColor(selectedTask.sequenceId, selectedTask.sourceFile);
 
-    // Blocker lines: solid, arrow pointing to blocker
+    // Blocker lines: solid, arrow pointing to blocker.
+    // blockedBy references taskIds within the same file, so scope lookups to it.
     for (const blockerId of selectedTask.blockedBy) {
-      const blockerEl = document.querySelector(`[data-task-id="${blockerId}"]`);
+      const blockerEl = findCard(taskKey({ sourceFile: selectedTask.sourceFile, taskId: blockerId }));
       if (!blockerEl) continue;
       const blockerRect = blockerEl.getBoundingClientRect();
 
@@ -65,10 +73,10 @@ export function DependencyOverlay({ tasks, selectedTaskId, visible }: Dependency
       });
     }
 
-    // Dependent lines: dashed, arrow from selected to dependent
+    // Dependent lines: dashed, arrow from selected to dependent (same file only)
     for (const task of tasks) {
-      if (task.blockedBy.includes(selectedTaskId)) {
-        const depEl = document.querySelector(`[data-task-id="${task.taskId}"]`);
+      if (task.sourceFile === selectedTask.sourceFile && task.blockedBy.includes(selectedTask.taskId)) {
+        const depEl = findCard(taskKey(task));
         if (!depEl) continue;
         const depRect = depEl.getBoundingClientRect();
 

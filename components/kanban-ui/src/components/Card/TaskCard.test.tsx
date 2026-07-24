@@ -48,7 +48,7 @@ describe('TaskCard', () => {
       />
     );
 
-    const card = container.querySelector('[data-task-id="TASK-003-015"]');
+    const card = container.querySelector('[data-task-id="003-project-manager-tasks.md:TASK-003-015"]');
     expect(card).not.toBeNull();
   });
 
@@ -63,7 +63,7 @@ describe('TaskCard', () => {
       />
     );
 
-    const card = container.querySelector('[data-task-id="TASK-003-015"]');
+    const card = container.querySelector('[data-task-id="003-project-manager-tasks.md:TASK-003-015"]');
     expect(card?.getAttribute('draggable')).toBeNull();
   });
 
@@ -79,12 +79,13 @@ describe('TaskCard', () => {
     );
 
     fireEvent.click(screen.getByRole('button'));
-    expect(onSelect).toHaveBeenCalledWith('TASK-003-015');
+    expect(onSelect).toHaveBeenCalledWith('003-project-manager-tasks.md:TASK-003-015');
   });
 
   it('should apply changed class when task is in changes', () => {
     const changes: TaskChange[] = [{
       taskId: 'TASK-003-015',
+      sourceFile: '003-project-manager-tasks.md',
       previousStatus: 'pending',
       newStatus: 'in-progress',
       changedAt: new Date().toISOString(),
@@ -101,5 +102,26 @@ describe('TaskCard', () => {
 
     const card = container.querySelector('.card-changed');
     expect(card).not.toBeNull();
+  });
+
+  it('should not apply changed class for the same taskId from a different file', () => {
+    const changes: TaskChange[] = [{
+      taskId: 'TASK-003-015',
+      sourceFile: 'some-other-file-tasks.md',
+      previousStatus: 'pending',
+      newStatus: 'in-progress',
+      changedAt: new Date().toISOString(),
+    }];
+
+    const { container } = render(
+      <TaskCard
+        task={mockTask}
+        changes={changes}
+        isSelected={false}
+        onSelect={vi.fn()}
+      />
+    );
+
+    expect(container.querySelector('.card-changed')).toBeNull();
   });
 });

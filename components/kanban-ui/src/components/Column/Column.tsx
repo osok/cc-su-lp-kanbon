@@ -7,6 +7,7 @@ import React from 'react';
 import type { Task, TaskChange, StatusType } from '@kanban/types';
 import { TaskCard } from '../Card/TaskCard.js';
 import { getStatusColor } from '../../utils/colors.js';
+import { taskKey } from '../../utils/task-key.js';
 import styles from './Column.module.css';
 
 const STATUS_LABELS: Record<StatusType, string> = {
@@ -38,16 +39,26 @@ export function Column({ status, tasks, changes, selectedTaskId, onSelectTask, o
         </span>
       </div>
       <div className={styles.body}>
-        {tasks.map(task => (
-          <TaskCard
-            key={`${task.sequenceId}:${task.taskId}`}
-            task={task}
-            changes={changes}
-            isSelected={selectedTaskId === task.taskId}
-            onSelect={onSelectTask}
-            onOpenDetail={onOpenDetail}
-          />
-        ))}
+        {(() => {
+          // Files can contain repeated task IDs; suffix repeats so React keys
+          // stay unique (stable across re-sorts since sorting is stable)
+          const seen = new Map<string, number>();
+          return tasks.map(task => {
+            const key = taskKey(task);
+            const n = seen.get(key) ?? 0;
+            seen.set(key, n + 1);
+            return (
+              <TaskCard
+                key={n === 0 ? key : `${key}#${n}`}
+                task={task}
+                changes={changes}
+                isSelected={selectedTaskId === key}
+                onSelect={onSelectTask}
+                onOpenDetail={onOpenDetail}
+              />
+            );
+          });
+        })()}
       </div>
     </div>
   );

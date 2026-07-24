@@ -22,13 +22,24 @@ const EXTENDED_PALETTE = [
 ];
 
 /**
- * Get the accent color for a sequence ID.
+ * Get the accent color for a sequence.
  * Known sequences use CSS custom properties.
- * Unknown sequences get auto-assigned colors from the extended palette.
+ * Unknown sequences get auto-assigned colors from the extended palette,
+ * hashed on sourceFile when provided — sequenceId is not unique across files
+ * (every unprefixed file falls back to "000"), so hashing the id alone would
+ * give all of those the same color.
  */
-export function getSequenceColor(sequenceId: string): string {
+export function getSequenceColor(sequenceId: string, sourceFile?: string): string {
   if (KNOWN_SEQUENCE_COLORS[sequenceId]) {
     return KNOWN_SEQUENCE_COLORS[sequenceId];
+  }
+
+  if (sourceFile) {
+    let hash = 0;
+    for (let i = 0; i < sourceFile.length; i++) {
+      hash = (hash * 31 + sourceFile.charCodeAt(i)) >>> 0;
+    }
+    return EXTENDED_PALETTE[hash % EXTENDED_PALETTE.length];
   }
 
   // Auto-assign from extended palette based on sequence number

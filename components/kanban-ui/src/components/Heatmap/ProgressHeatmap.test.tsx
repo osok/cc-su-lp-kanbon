@@ -44,7 +44,7 @@ describe('ProgressHeatmap', () => {
     );
 
     fireEvent.click(screen.getByText(/001 - Core/));
-    expect(onSelect).toHaveBeenCalledWith('001');
+    expect(onSelect).toHaveBeenCalledWith('001-tasks.md');
   });
 
   it('should render nothing when no sequences', () => {

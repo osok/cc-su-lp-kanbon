@@ -9,9 +9,10 @@ import styles from './FilterBar.module.css';
 
 interface FilterBarProps {
   sequences: Sequence[];
+  /** sourceFile of the selected sequence — the unique sequence key */
   selectedSequence: string | null;
   totalTasks: number;
-  onSelectSequence: (sequenceId: string | null) => void;
+  onSelectSequence: (sourceFile: string | null) => void;
 }
 
 export function FilterBar({
@@ -32,11 +33,11 @@ export function FilterBar({
       </button>
       {sequences.map(seq => (
         <button
-          key={seq.sequenceId}
-          className={`${styles.tab} ${selectedSequence === seq.sequenceId ? styles.active : ''}`}
-          onClick={() => onSelectSequence(seq.sequenceId)}
+          key={seq.sourceFile}
+          className={`${styles.tab} ${selectedSequence === seq.sourceFile ? styles.active : ''}`}
+          onClick={() => onSelectSequence(seq.sourceFile)}
           role="tab"
-          aria-selected={selectedSequence === seq.sequenceId}
+          aria-selected={selectedSequence === seq.sourceFile}
         >
           {seq.sequenceId} - {seq.sequenceName}
           <span className={styles.progress}>

@@ -5,12 +5,16 @@
  * Requirements: FR-FLT-001 through FR-FLT-005
  */
 import React, { useCallback } from 'react';
-import type { SequenceFilterConfig, SequenceFilterMode } from '../../hooks/useFilter.js';
+import type { SequenceFilterConfig, SequenceFilterMode, SortDirection } from '../../hooks/useFilter.js';
 import styles from './SequenceFilterControls.module.css';
 
 interface SequenceFilterControlsProps {
   filterConfig: SequenceFilterConfig;
   onFilterChange: (config: SequenceFilterConfig) => void;
+  nameFilter: string;
+  onNameFilterChange: (text: string) => void;
+  sortDirection: SortDirection;
+  onToggleSortDirection: () => void;
   visibleCount: number;
   totalCount: number;
 }
@@ -26,6 +30,10 @@ const FILTER_OPTIONS: { value: SequenceFilterMode; label: string }[] = [
 export function SequenceFilterControls({
   filterConfig,
   onFilterChange,
+  nameFilter,
+  onNameFilterChange,
+  sortDirection,
+  onToggleSortDirection,
   visibleCount,
   totalCount,
 }: SequenceFilterControlsProps): React.ReactElement {
@@ -39,6 +47,10 @@ export function SequenceFilterControls({
       onFilterChange({ ...filterConfig, lastN: value });
     }
   }, [filterConfig, onFilterChange]);
+
+  const handleNameFilterChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    onNameFilterChange(e.target.value);
+  }, [onNameFilterChange]);
 
   return (
     <div className={styles.controls}>
@@ -65,6 +77,35 @@ export function SequenceFilterControls({
           aria-label="Number of recent task lists"
         />
       )}
+      <div className={styles.searchWrap}>
+        <input
+          type="search"
+          className={styles.searchInput}
+          value={nameFilter}
+          onChange={handleNameFilterChange}
+          placeholder="Filter by name (e.g. EVA)"
+          aria-label="Filter by name"
+        />
+        {nameFilter && (
+          <button
+            type="button"
+            className={styles.clearButton}
+            onClick={() => onNameFilterChange('')}
+            aria-label="Clear name filter"
+          >
+            &times;
+          </button>
+        )}
+      </div>
+      <button
+        type="button"
+        className={styles.sortButton}
+        onClick={onToggleSortDirection}
+        aria-label="Toggle sort direction"
+        title={sortDirection === 'desc' ? 'Newest first — click for oldest first' : 'Oldest first — click for newest first'}
+      >
+        {sortDirection === 'desc' ? '↓ Desc' : '↑ Asc'}
+      </button>
       <span className={styles.count}>
         {visibleCount === totalCount
           ? `${totalCount} list${totalCount !== 1 ? 's' : ''}`

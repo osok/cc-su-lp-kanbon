@@ -90,10 +90,12 @@ export class PollManager {
     const errors: string[] = [];
     const previousTasks = new Map<string, Task>();
 
-    // Snapshot previous state for change detection
+    // Snapshot previous state for change detection.
+    // Keyed by sourceFile:taskId — sequenceId is not unique across files,
+    // so keying by it would compare tasks from different files.
     for (const result of this.taskStore.values()) {
       for (const task of result.tasks) {
-        previousTasks.set(`${task.sequenceId}:${task.taskId}`, task);
+        previousTasks.set(`${task.sourceFile}:${task.taskId}`, task);
       }
     }
 
@@ -151,11 +153,12 @@ export class PollManager {
     const now = new Date().toISOString();
     for (const result of this.taskStore.values()) {
       for (const task of result.tasks) {
-        const key = `${task.sequenceId}:${task.taskId}`;
+        const key = `${task.sourceFile}:${task.taskId}`;
         const prev = previousTasks.get(key);
         if (prev && prev.status !== task.status) {
           changes.push({
             taskId: task.taskId,
+            sourceFile: task.sourceFile,
             previousStatus: prev.status,
             newStatus: task.status,
             changedAt: now,

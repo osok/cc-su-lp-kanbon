@@ -173,4 +173,18 @@ Implement recording workflow handlers.
     expect(result.tasks).toHaveLength(1);
     expect(result.tasks[0].details).toBeUndefined();
   });
+
+  it('should warn on duplicate task IDs within a file', () => {
+    const content = `# Dup Tasks
+
+| ID | Task | Status | Blocked-By | Agent | Notes |
+|----|------|--------|------------|-------|-------|
+| T001 | First | pending | - | Developer | |
+| T001 | Second | complete | - | Developer | |
+| T002 | Third | pending | - | Developer | |
+`;
+    const result = parseTaskFile(content, '001-tasks.md');
+    expect(result.tasks).toHaveLength(3);
+    expect(result.warnings).toContain('Duplicate task ID "T001"');
+  });
 });

@@ -52,12 +52,12 @@ describe('FilterBar', () => {
     render(<FilterBar {...defaultProps} onSelectSequence={onSelect} />);
 
     fireEvent.click(screen.getByText(/001 - Core/));
-    expect(onSelect).toHaveBeenCalledWith('001');
+    expect(onSelect).toHaveBeenCalledWith('001-tasks.md');
   });
 
   it('should call onSelectSequence with null when All is clicked', () => {
     const onSelect = vi.fn();
-    render(<FilterBar {...defaultProps} selectedSequence="001" onSelectSequence={onSelect} />);
+    render(<FilterBar {...defaultProps} selectedSequence="001-tasks.md" onSelectSequence={onSelect} />);
 
     fireEvent.click(screen.getByText('All (107)'));
     expect(onSelect).toHaveBeenCalledWith(null);
