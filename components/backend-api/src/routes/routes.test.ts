@@ -156,4 +156,47 @@ describe('API Routes', () => {
     expect(res.body.data).toHaveProperty('directory');
     expect(res.body.data).toHaveProperty('pollingInterval');
   });
+
+  // GET /api/config/browse lists subdirectories of a valid path
+  it('GET /api/config/browse should list subdirectories of a valid path', async () => {
+    await fs.mkdir(path.join(tempDir, 'sub-a'));
+    await fs.mkdir(path.join(tempDir, 'sub-b'));
+
+    const res = await request(app)
+      .get('/api/config/browse')
+      .query({ path: tempDir });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.current).toBe(tempDir);
+    expect(res.body.data.directories.map((d: { name: string }) => d.name)).toEqual([
+      'sub-a',
+      'sub-b',
+    ]);
+  });
+
+  // GET /api/config/browse falls back to home when the path does not exist
+  it('GET /api/config/browse should fall back to home dir for a nonexistent path', async () => {
+    const res = await request(app)
+      .get('/api/config/browse')
+      .query({ path: '/nonexistent/path/that/is/gone' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.current).toBe(os.homedir());
+  });
+
+  // GET /api/config/browse defaults to home when no path is given
+  it('GET /api/config/browse should default to home dir when no path given', async () => {
+    const res = await request(app).get('/api/config/browse');
+    expect(res.status).toBe(200);
+    expect(res.body.data.current).toBe(os.homedir());
+  });
+
+  // GET /api/config/browse rejects traversal
+  it('GET /api/config/browse should reject traversal paths', async () => {
+    const res = await request(app)
+      .get('/api/config/browse')
+      .query({ path: '/home/../etc' });
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('INVALID_PATH');
+  });
 });

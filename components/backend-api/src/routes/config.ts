@@ -94,17 +94,29 @@ configRouter.get('/browse', (req, res) => {
     return;
   }
 
-  const resolved = path.resolve(requestedPath);
+  // Resolve the requested path; if it doesn't exist or isn't a readable
+  // directory on this machine, fall back to the user's home directory so the
+  // browser always opens on a valid starting point.
+  const resolveDirectory = (candidate: string): string | null => {
+    const abs = path.resolve(candidate);
+    try {
+      if (fs.statSync(abs).isDirectory()) return abs;
+    } catch {
+      // Not accessible - caller decides on fallback.
+    }
+    return null;
+  };
+
+  const resolved = resolveDirectory(requestedPath) ?? resolveDirectory(os.homedir());
+
+  if (!resolved) {
+    res.status(400).json({
+      error: { code: 'INVALID_PATH', message: 'Cannot read directory.' },
+    });
+    return;
+  }
 
   try {
-    const stat = fs.statSync(resolved);
-    if (!stat.isDirectory()) {
-      res.status(400).json({
-        error: { code: 'INVALID_PATH', message: 'Path is not a directory.' },
-      });
-      return;
-    }
-
     const entries = fs.readdirSync(resolved, { withFileTypes: true });
     const directories = entries
       .filter(e => e.isDirectory() && !e.name.startsWith('.'))
